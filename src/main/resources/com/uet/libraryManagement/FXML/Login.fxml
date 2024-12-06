@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="400.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.libraryManagement.Controllers.LoginController">
+   <children>
+      <VBox alignment="CENTER" prefHeight="400.0" prefWidth="300.0" spacing="10.0">
+         <children>
+            <ImageView fitHeight="131.0" fitWidth="141.0" focusTraversable="true" pickOnBounds="true" preserveRatio="true">
+               <VBox.margin>
+                  <Insets top="30.0" />
+               </VBox.margin>
+               <image>
+                  <Image url="@../ICONS/logo.png" />
+               </image>
+            </ImageView>
+            <AnchorPane prefHeight="217.0" prefWidth="300.0">
+               <children>
+                  <Label fx:id="messageLabel" layoutX="22.0" layoutY="177.0" prefHeight="26.0" prefWidth="255.0" styleClass="Login-label" textAlignment="CENTER" />
+                  <VBox layoutX="56.0" prefHeight="106.0" prefWidth="186.0" spacing="5.0">
+                     <children>
+                        <Label styleClass="Login-label-username" text="Username" />
+                        <TextField fx:id="username_textfield" prefHeight="26.0" prefWidth="150.0" promptText="Username" />
+                        <Label styleClass="Login-label-password" text="Password" />
+                        <PasswordField fx:id="password_textfield" prefHeight="26.0" prefWidth="150.0" promptText="Password" />
+                     </children>
+                     <padding>
+                        <Insets top="5.0" />
+                     </padding>
+                  </VBox>
+                  <HBox alignment="TOP_CENTER" layoutX="22.0" layoutY="120.0" prefHeight="50.0" prefWidth="255.0" spacing="10.0">
+                     <children>
+                        <JFXButton fx:id="login_button" alignment="CENTER" onAction="#handleLogin" prefHeight="42.0" prefWidth="110.0" styleClass="Login-JFXButton-Login" text="Login">
+                           <graphic>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../ICONS/login.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </JFXButton>
+                        <JFXButton alignment="CENTER" onAction="#handleRegister" prefHeight="42.0" prefWidth="110.0" styleClass="Login-JFXButton-Login" text="Register">
+                           <graphic>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../ICONS/register.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </JFXButton>
+                     </children>
+                  </HBox>
+               </children>
+            </AnchorPane>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

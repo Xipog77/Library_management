@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="464.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uet.libraryManagement.Controllers.SearchDocumentsController">
+    <children>
+        <!-- Search Bar -->
+        <HBox alignment="CENTER" layoutX="16.0" layoutY="10" prefHeight="34.0" prefWidth="462.0" styleClass="Documents-HBox" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="222.0">
+            <JFXButton contentDisplay="GRAPHIC_ONLY" focusTraversable="false" onAction="#handleSearchAction" styleClass="Menu-jfx-button-custom">
+                <graphic>
+                    <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@../ICONS/search.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+            </JFXButton>
+            <TextField fx:id="searchBar" focusTraversable="false" prefHeight="25.0" prefWidth="184.0" promptText="Search documents...">
+                <HBox.margin>
+                    <Insets />
+                </HBox.margin></TextField>
+            <JFXButton contentDisplay="GRAPHIC_ONLY" focusTraversable="false" onAction="#clearSearchTerm" styleClass="Menu-jfx-button-custom">
+                <graphic>
+                    <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@../ICONS/clear.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+            </JFXButton>
+            <JFXButton contentDisplay="RIGHT" focusTraversable="false" onAction="#toggleFilters" prefHeight="33.0" prefWidth="150.0" styleClass="Documents-JFXButton" text="Advanced Search">
+                <graphic>
+                    <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@../ICONS/advanced_search.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <HBox.margin>
+                    <Insets left="30.0" />
+                </HBox.margin>
+            </JFXButton>
+        </HBox>
+
+        <!-- Advanced Filters (Collapsible) -->
+        <VBox fx:id="filtersPanel" layoutX="10" layoutY="52.0" prefHeight="325.0" prefWidth="463.0" spacing="10" styleClass="Document-vbox" visible="false">
+            <Text styleClass="Document-label" text="Advanced Search Filters" textAlignment="CENTER" wrappingWidth="463.0491943359375" />
+            <HBox spacing="10">
+                <Label focusTraversable="false" prefHeight="25.0" text="Title:" />
+                <TextField fx:id="titleFilter" focusTraversable="false" promptText="Filter by title" />
+            </HBox>
+            <HBox spacing="10">
+                <Label alignment="CENTER" focusTraversable="false" prefHeight="25.0" text="Author:" />
+                <TextField fx:id="authorFilter" focusTraversable="false" promptText="Filter by author" />
+            </HBox>
+            <HBox prefHeight="25.0" prefWidth="445.0" spacing="10.0">
+                <Label alignment="CENTER" focusTraversable="false" prefHeight="25.0" text="Category:" />
+                <TextField fx:id="categoryFilter" focusTraversable="false" promptText="Filter by category" />
+            </HBox>
+            <HBox prefHeight="25.0" prefWidth="445.0" spacing="10.0">
+                <Label alignment="CENTER" focusTraversable="false" prefHeight="25.0" text="Isbn 10:" />
+                <TextField fx:id="isbn10Filter" focusTraversable="false" promptText="Filter by isbn10" />
+            </HBox>
+            <HBox prefHeight="25.0" prefWidth="445.0" spacing="10.0">
+                <Label alignment="CENTER" focusTraversable="false" prefHeight="25.0" text="Isbn 13:" />
+                <TextField fx:id="isbn13Filter" focusTraversable="false" promptText="Filter by isbn13" />
+            </HBox>
+            <HBox spacing="10">
+                <Label alignment="CENTER" focusTraversable="false" prefHeight="25.0" text="Year:" />
+                <DatePicker fx:id="startDateFilter" focusTraversable="false" promptText="Start Year" />
+                <Text text="to" />
+                <DatePicker fx:id="endDateFilter" focusTraversable="false" promptText="End Year" />
+            </HBox>
+            <HBox alignment="CENTER" spacing="20.0">
+                <JFXButton focusTraversable="false" onAction="#applyFilters" prefHeight="42.0" prefWidth="115.0" styleClass="Documents-VBox-JFXButton" text="Search">
+                    <graphic>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../ICONS/search.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </JFXButton>
+                <JFXButton focusTraversable="false" onAction="#clearFilters" prefHeight="42.0" prefWidth="115.0" styleClass="Documents-VBox-JFXButton" text="Clear filters">
+                    <graphic>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../ICONS/clear_filters.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </JFXButton>
+            </HBox>
+        </VBox>
+
+        <TableView fx:id="docsTable" focusTraversable="false" layoutX="15.0" layoutY="56.0" prefHeight="348.0" prefWidth="670.0" styleClass="Documents-TableView">
+            <columns>
+                <TableColumn fx:id="noCol" prefWidth="40.0" text="No." />
+                <TableColumn fx:id="titleCol" prefWidth="145.0" text="Title" />
+                <TableColumn fx:id="authorCol" prefWidth="140.0" text="Author" />
+                <TableColumn fx:id="categoryCol" prefWidth="100.0" text="Genre" />
+                <TableColumn fx:id="publisherCol" prefWidth="146.0" text="Publisher" />
+                <TableColumn fx:id="dateCol" prefWidth="108.0" text="Published Date" />
+                <TableColumn fx:id="isbn10Col" prefWidth="75.0" text="Isbn 10" />
+                <TableColumn fx:id="isbn13Col" prefWidth="75.0" text="Isbn13" />
+            </columns>
+        </TableView>
+        <ComboBox fx:id="docTypeBox" focusTraversable="false" layoutX="596.0" layoutY="14.0" prefHeight="25.0" prefWidth="90.0" />
+        <JFXButton focusTraversable="false" layoutX="256.0" layoutY="409.0" onAction="#addDoc" prefHeight="34.0" prefWidth="175.0" styleClass="Documents-JFXButton" text="Add document">
+            <graphic>
+                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../ICONS/addDoc.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </JFXButton>
+    </children>
+</AnchorPane>
