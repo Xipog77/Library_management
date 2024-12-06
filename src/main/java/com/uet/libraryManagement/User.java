@@ -45,7 +45,6 @@ public class User {
         this.avatar = avatarUrl;
     }
 
-    // Getters and Setters
     public String getUsername() {
         return username;
     }

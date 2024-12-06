@@ -50,12 +50,11 @@ public class AdminDocumentsController extends DocumentsController {
 
                 Runnable onSuccess = () -> {
                     loadDocuments(docType);
-//                    showAlert("Document deleted successfully.");
                 };
 
                 Runnable onFailure = () -> {
                     Throwable ex = deleteTask.getException();
-                    if (ex != null) ex.printStackTrace(); // Log lỗi để debug
+                    if (ex != null) ex.printStackTrace();
                     showAlert("Failed to delete the document.");
                 };
 
@@ -74,10 +73,9 @@ public class AdminDocumentsController extends DocumentsController {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uet/libraryManagement/FXML/DocumentForm.fxml"));
                 Parent formRoot = loader.load();
 
-                // Get the controller and set the mode to edit
                 DocumentFormController controller = loader.getController();
                 controller.setMode("edit");
-                controller.setDocument(selectedDocument); // Pass the selected document for editing
+                controller.setDocument(selectedDocument);
                 controller.setDocType(docTypeBox.getValue());
 
                 Scene detailScene = new Scene(formRoot);
@@ -85,7 +83,6 @@ public class AdminDocumentsController extends DocumentsController {
 
                 detailScene.getStylesheets().add(SceneManager.getInstance().get_css());
 
-                // Create a new stage for the edit window
                 Stage formStage = new Stage();
                 formStage.setResizable(false);
                 String icon_url = Objects.requireNonNull(this.getClass().getResource("/com/uet/libraryManagement/ICONS/logo.png")).toExternalForm();
@@ -96,7 +93,6 @@ public class AdminDocumentsController extends DocumentsController {
                 formStage.initModality(Modality.APPLICATION_MODAL);
                 formStage.showAndWait();
 
-                // Refresh the document list after editing
                 loadDocuments(docTypeBox.getValue());
 
             } catch (IOException e) {
@@ -113,7 +109,6 @@ public class AdminDocumentsController extends DocumentsController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uet/libraryManagement/FXML/DocumentForm.fxml"));
             Parent detailRoot = loader.load();
 
-            // Get the controller and set the mode to add
             DocumentFormController controller = loader.getController();
             controller.setMode("add");
             controller.setDocType(docTypeBox.getValue());
@@ -121,8 +116,7 @@ public class AdminDocumentsController extends DocumentsController {
             Scene detailScene = new Scene(detailRoot);
 
             detailScene.getStylesheets().add(SceneManager.getInstance().get_css());
-            
-            // Create a new stage for the add document window
+
             Stage formStage = new Stage();
             formStage.setResizable(false);
             String icon_url = Objects.requireNonNull(this.getClass().getResource("/com/uet/libraryManagement/ICONS/logo.png")).toExternalForm();
@@ -133,7 +127,6 @@ public class AdminDocumentsController extends DocumentsController {
             formStage.initModality(Modality.APPLICATION_MODAL);
             formStage.showAndWait();
 
-            // Refresh the document list after adding a new document
             loadDocuments(docTypeBox.getValue());
         } catch (IOException e) {
             e.printStackTrace();

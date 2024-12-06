@@ -73,7 +73,6 @@ public class SearchDocumentsController implements Initializable {
         });
 
         docTypeBox.getItems().addAll("Books", "Theses");
-        // set default to show books
         docTypeBox.getSelectionModel().select("Books");
         docTypeBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
             docsTable.getItems().clear();
@@ -91,7 +90,6 @@ public class SearchDocumentsController implements Initializable {
             System.out.println("No saved search term found.");
         }
 
-        // handle double-clicked to show document details
         docsTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 if (docsTable.getSelectionModel().getSelectedItem() != null) {
@@ -104,7 +102,6 @@ public class SearchDocumentsController implements Initializable {
         HandleOutsideClickListener();
     }
 
-    // Toggle the visibility of the advanced filter panel
     @FXML
     private void toggleFilters() {
         filtersPanel.setVisible(!filtersPanel.isVisible());
@@ -113,7 +110,6 @@ public class SearchDocumentsController implements Initializable {
         }
     }
 
-    // Handle search action with the text from search bar
     @FXML
     private void handleSearchAction() {
         String searchTerm = searchBar.getText();
@@ -139,7 +135,6 @@ public class SearchDocumentsController implements Initializable {
                 showAlert("Failed to load documents.");
             });
         } else {
-            // Handle case for empty search term
             showAlert("Please enter a search term.");
         }
     }
@@ -187,7 +182,6 @@ public class SearchDocumentsController implements Initializable {
         docsTable.getItems().clear();
     }
 
-    // Apply filters based on user inputs
     @FXML
     private void applyFilters() {
         filtersPanel.setVisible(false);
@@ -197,7 +191,6 @@ public class SearchDocumentsController implements Initializable {
                 StringBuilder searchTerm = new StringBuilder();
                 String docType = docTypeBox.getValue();
 
-                // Append each filter to the query if it's not empty
                 if (!titleFilter.getText().isEmpty()) {
                     searchTerm.append("intitle:").append(titleFilter.getText()).append("+");
                 }
@@ -224,9 +217,7 @@ public class SearchDocumentsController implements Initializable {
                     searchTerm.setLength(searchTerm.length() - 1);
                 }
 
-                // Search for volumes based on the filters
                 List<Volume> volumes = BookAPI.searchVolumes(searchTerm.toString(), docType);
-                // Convert the volumes to document objects
                 return convertVolumesToDocuments(volumes);
             }
         };
@@ -246,7 +237,6 @@ public class SearchDocumentsController implements Initializable {
                 });
     }
 
-    // Clear all filters
     @FXML
     private void clearFilters() {
         titleFilter.clear();
@@ -258,7 +248,6 @@ public class SearchDocumentsController implements Initializable {
         endDateFilter.setValue(null);
     }
 
-    // add listener to handle clicked outside table
     private void HandleOutsideClickListener() {
         docsTable.sceneProperty().addListener((observable, oldScene, newScene) -> {
             if (newScene != null) {
@@ -266,12 +255,12 @@ public class SearchDocumentsController implements Initializable {
                     if (event.getTarget() instanceof Node) {
                         Node target = (Node) event.getTarget();
                         while (target != null) {
-                            if (target == docsTable) { // clicked on table view
+                            if (target == docsTable) {
                                 return;
                             }
                             target = target.getParent();
                         }
-                        docsTable.getSelectionModel().clearSelection(); // clicked outside tableview --> cancel selection
+                        docsTable.getSelectionModel().clearSelection();
                     }
                 });
             }
@@ -285,14 +274,12 @@ public class SearchDocumentsController implements Initializable {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uet/libraryManagement/FXML/SearchDocumentDetail.fxml"));
                 Parent detailRoot = loader.load();
 
-                // Get the controller and set the selected book
                 SearchDocumentDetailController controller = loader.getController();
                 controller.setDocumentDetails(selectedDocument);
 
                 Scene detailScene = new Scene(detailRoot);
                 detailScene.getStylesheets().add(SceneManager.getInstance().get_css());
 
-                // Create a new stage for the book detail window
                 Stage detailStage = new Stage();
                 detailStage.setResizable(false);
                 String icon_url = Objects.requireNonNull(this.getClass().getResource("/com/uet/libraryManagement/ICONS/logo.png")).toExternalForm();
@@ -300,7 +287,7 @@ public class SearchDocumentsController implements Initializable {
                 detailStage.getIcons().add(icon);
                 detailStage.setTitle("Document Details");
                 detailStage.setScene(detailScene);
-                detailStage.initModality(Modality.APPLICATION_MODAL); // Make it a modal window
+                detailStage.initModality(Modality.APPLICATION_MODAL);
                 detailStage.showAndWait();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -323,7 +310,6 @@ public class SearchDocumentsController implements Initializable {
             quantityDialog.setHeaderText("Add Document Quantity");
             quantityDialog.setContentText("Please enter the quantity:");
 
-            // Show the dialog and capture the result
             String quantityInput = quantityDialog.showAndWait().orElse("");
 
             if (quantityInput.isEmpty()) {
@@ -351,7 +337,6 @@ public class SearchDocumentsController implements Initializable {
     }
 
     private void saveData() {
-        // Save the current state before switching scenes
         System.out.println("Saving scene state...");
         System.out.println("Search term: " + searchBar.getText());
         System.out.println("Doc type: " + docTypeBox.getValue());

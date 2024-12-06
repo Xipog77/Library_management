@@ -31,7 +31,6 @@ public class SearchDocumentDetailController {
         isbn13Label.setText("Isbn 13: " + document.getIsbn13());
         descriptionArea.setText(document.getDescription());
 
-        // Load thumbnail image
         if (document.getThumbnailUrl() != null && !document.getThumbnailUrl().isEmpty()
                 && !document.getThumbnailUrl().equalsIgnoreCase("No Thumbnail")) {
             Image image = new Image(document.getThumbnailUrl(), true);
@@ -41,7 +40,7 @@ public class SearchDocumentDetailController {
             Image image = new Image(getClass().getResource("/com/uet/libraryManagement/ICONS/no_image.png").toExternalForm());
             thumbnailImageView.setFitHeight(150);
             thumbnailImageView.setFitWidth(150);
-            thumbnailImageView.setImage(image); // set no thumbnail image
+            thumbnailImageView.setImage(image);
         }
     }
 }

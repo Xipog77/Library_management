@@ -45,7 +45,6 @@ public class ManageUsersController {
         roleCol.setCellValueFactory(new PropertyValueFactory<>("role"));
         loadUsers();
 
-        // handle double-clicked to show document details
         usersTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 if (usersTable.getSelectionModel().getSelectedItem() != null) {
@@ -64,14 +63,12 @@ public class ManageUsersController {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uet/libraryManagement/FXML/UserDetail.fxml"));
                 Parent detailRoot = loader.load();
 
-                // Get the controller and set the selected user
                 UserDetailController controller = loader.getController();
                 controller.setUserDetails(selectedUser);
 
                 Scene detailScene = new Scene(detailRoot);
 
                 detailScene.getStylesheets().add(SceneManager.getInstance().get_css());
-                // Create a new stage for the user detail window
                 Stage detailStage = new Stage();
                 detailStage.setResizable(false);
                 String icon_url = Objects.requireNonNull(this.getClass().getResource("/com/uet/libraryManagement/ICONS/logo.png")).toExternalForm();
@@ -79,7 +76,7 @@ public class ManageUsersController {
                 detailStage.getIcons().add(icon);
                 detailStage.setTitle("User information");
                 detailStage.setScene(detailScene);
-                detailStage.initModality(Modality.APPLICATION_MODAL); // Make it a modal window
+                detailStage.initModality(Modality.APPLICATION_MODAL);
                 detailStage.showAndWait();
 
             } catch (IOException e) {
@@ -92,13 +89,13 @@ public class ManageUsersController {
         Task<List<User>> loadUsersTask = new Task<>() {
             @Override
             protected List<User> call() {
-                return UserRepository.getInstance().getAllUsers(); // Lấy danh sách người dùng
+                return UserRepository.getInstance().getAllUsers();
             }
         };
 
         TaskManager.runTask(loadUsersTask,
-                () -> usersTable.getItems().setAll(loadUsersTask.getValue()), // Cập nhật giao diện sau khi tải thành công
-                () -> showAlert("Failed to load users. Please try again.") // Hiển thị thông báo lỗi nếu tải thất bại
+                () -> usersTable.getItems().setAll(loadUsersTask.getValue()),
+                () -> showAlert("Failed to load users. Please try again.")
         );
     }
 
@@ -114,8 +111,8 @@ public class ManageUsersController {
             };
 
             TaskManager.runTask(searchTask,
-                    () -> usersTable.setItems(FXCollections.observableArrayList(searchTask.getValue())), // Cập nhật danh sách tìm kiếm
-                    () -> showAlert("Failed to search users. Please try again.") // Thông báo lỗi khi tìm kiếm
+                    () -> usersTable.setItems(FXCollections.observableArrayList(searchTask.getValue())),
+                    () -> showAlert("Failed to search users. Please try again.")
             );
         } else {
             showAlert("Please enter a search term");
@@ -136,7 +133,6 @@ public class ManageUsersController {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uet/libraryManagement/FXML/AdminHistory.fxml"));
                 Parent historyRoot = loader.load();
 
-                // Get the HistoryController and set the user ID to load history for the selected user
                 HistoryController historyController = loader.getController();
                 historyController.loadHistory(selectedUser.getId(), "Books");
                 historyController.setSelectedUserId(selectedUser.getId());
@@ -144,7 +140,6 @@ public class ManageUsersController {
                 Scene detailScene = new Scene(historyRoot);
 
                 detailScene.getStylesheets().add(SceneManager.getInstance().get_css());
-                // Open history window
                 Stage historyStage = new Stage();
                 historyStage.setResizable(false);
                 String icon_url = Objects.requireNonNull(this.getClass().getResource("/com/uet/libraryManagement/ICONS/logo.png")).toExternalForm();
@@ -152,7 +147,7 @@ public class ManageUsersController {
                 historyStage.getIcons().add(icon);
                 historyStage.setTitle("Borrowing History for " + selectedUser.getUsername());
                 historyStage.setScene(detailScene);
-                historyStage.initModality(Modality.APPLICATION_MODAL); // Make it a modal window
+                historyStage.initModality(Modality.APPLICATION_MODAL);
                 historyStage.showAndWait();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -164,7 +159,6 @@ public class ManageUsersController {
 
     @FXML
     private void addUser() throws IOException {
-        // Logic to open add user dialog and update users table after adding
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uet/libraryManagement/FXML/AddUser.fxml"));
             Parent detailRoot = loader.load();
@@ -172,7 +166,6 @@ public class ManageUsersController {
             Scene detailScene = new Scene(detailRoot);
 
             detailScene.getStylesheets().add(SceneManager.getInstance().get_css());
-            // Create a new stage for the book detail window
             Stage detailStage = new Stage();
             detailStage.setResizable(false);
             String icon_url = Objects.requireNonNull(this.getClass().getResource("/com/uet/libraryManagement/ICONS/logo.png")).toExternalForm();
@@ -180,10 +173,9 @@ public class ManageUsersController {
             detailStage.getIcons().add(icon);
             detailStage.setTitle("Add user");
             detailStage.setScene(detailScene);
-            detailStage.initModality(Modality.APPLICATION_MODAL); // Make it a modal window
+            detailStage.initModality(Modality.APPLICATION_MODAL);
             detailStage.showAndWait();
 
-            // refresh user table
             loadUsers();
         } catch (IOException e) {
             e.printStackTrace();
@@ -192,21 +184,18 @@ public class ManageUsersController {
 
     @FXML
     private void editUser() {
-        // Logic to open edit user dialog and update users table after editing
         User user = usersTable.getSelectionModel().getSelectedItem();
         if (user != null) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uet/libraryManagement/FXML/UserForm.fxml"));
                 Parent editRoot = loader.load();
 
-                // Access the controller for EditUser to set initial user data
                 UserFormController userFormController = loader.getController();
-                userFormController.setUserInfo(user);  // Populate form with user's data
+                userFormController.setUserInfo(user);
 
                 Scene detailScene = new Scene(editRoot);
 
                 detailScene.getStylesheets().add(SceneManager.getInstance().get_css());
-                // Open the edit dialog
                 Stage editStage = new Stage();
                 editStage.setResizable(false);
                 String icon_url = Objects.requireNonNull(this.getClass().getResource("/com/uet/libraryManagement/ICONS/logo.png")).toExternalForm();
@@ -217,7 +206,6 @@ public class ManageUsersController {
                 editStage.initModality(Modality.APPLICATION_MODAL);
                 editStage.showAndWait();
 
-                // Refresh user table after editing
                 loadUsers();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -258,9 +246,9 @@ public class ManageUsersController {
                 TaskManager.runTask(deleteTask,
                         () -> {
                             showAlert("User deleted successfully");
-                            loadUsers(); // Làm mới danh sách sau khi xóa
+                            loadUsers();
                         },
-                        () -> showAlert("Failed to delete user. Please try again.") // Thông báo lỗi khi xóa thất bại
+                        () -> showAlert("Failed to delete user. Please try again.")
                 );
             }
         } else {
@@ -275,12 +263,12 @@ public class ManageUsersController {
                     if (event.getTarget() instanceof Node) {
                         Node target = (Node) event.getTarget();
                         while (target != null) {
-                            if (target == usersTable) { // clicked on table view
+                            if (target == usersTable) {
                                 return;
                             }
                             target = target.getParent();
                         }
-                        usersTable.getSelectionModel().clearSelection(); // clicked outside tableview --> cancel selection
+                        usersTable.getSelectionModel().clearSelection();
                     }
                 });
             }

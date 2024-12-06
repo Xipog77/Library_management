@@ -4,7 +4,6 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class Document {
-    // attributes
     private SimpleIntegerProperty id;
     private final SimpleStringProperty title;
     private final SimpleStringProperty author;
@@ -16,7 +15,6 @@ public class Document {
     private final SimpleStringProperty isbn13;
     private SimpleIntegerProperty quantity;
 
-    //constructors
     public Document() {
         this.quantity = new SimpleIntegerProperty();
         this.id = new SimpleIntegerProperty();
@@ -82,7 +80,6 @@ public class Document {
         this.quantity = new SimpleIntegerProperty(quantity);
     }
 
-    // getters, setters
     public int getId() { return id.get(); }
 
     public void setId(int id) { this.id.set(id); }

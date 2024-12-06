@@ -35,7 +35,7 @@ public class DocumentDetailController {
 
     private Document document;
     private String docType;
-    private Integer userRating = null;  // Store the selected rating
+    private Integer userRating = null;
 
     public void setDocumentDetails(Document document) {
         setupRatingEvents();
@@ -52,7 +52,6 @@ public class DocumentDetailController {
         isbn13Label.setText("Isbn 13: " + document.getIsbn13());
         descriptionArea.setText(document.getDescription());
 
-        // Load thumbnail image
         if (document.getThumbnailUrl() != null && !document.getThumbnailUrl().isEmpty()
                 && !document.getThumbnailUrl().equalsIgnoreCase("No Thumbnail")) {
             Image image = new Image(document.getThumbnailUrl(), true);
@@ -62,13 +61,12 @@ public class DocumentDetailController {
             Image image = new Image(getClass().getResource("/com/uet/libraryManagement/ICONS/no_image.png").toExternalForm());
             thumbnailImageView.setFitHeight(150);
             thumbnailImageView.setFitWidth(150);
-            thumbnailImageView.setImage(image); // set no thumbnail image
+            thumbnailImageView.setImage(image);
         }
     }
 
     @FXML
     private void comment() {
-        // Kiểm tra người dùng có nhập bình luận hay không
         String commentText = newCommentArea.getText().trim();
         if (commentText.isEmpty()) {
             showAlert("Please enter a comment.");
@@ -80,7 +78,6 @@ public class DocumentDetailController {
             return;
         }
 
-        // Lấy thông tin người dùng
         int userId = SessionManager.getInstance().getUser().getId();
         RatingComment newComment = new RatingComment(userId, userRating, commentText, new Timestamp(System.currentTimeMillis()));
 
@@ -106,7 +103,6 @@ public class DocumentDetailController {
         Task<Void> loadCommentsTask = new Task<>() {
             @Override
             protected Void call() throws Exception {
-                // Lấy số lượng đánh giá và điểm đánh giá từ cơ sở dữ liệu
                 String normalizedDocType;
                 if (docType.equalsIgnoreCase("book") || docType.equalsIgnoreCase("books")) {
                     normalizedDocType = "book";
@@ -118,20 +114,17 @@ public class DocumentDetailController {
                 int numRating = RatingRepository.getInstance().getRatingNum(documentId, normalizedDocType);
                 int docRating = RatingRepository.getInstance().getRating(documentId, normalizedDocType);
 
-                // Lấy danh sách bình luận
                 ObservableList<RatingComment> comments = RatingRepository.getInstance().getCommentsByDocumentId(documentId, docType);
                 if (comments == null || comments.isEmpty()) {
                     comments = FXCollections.observableArrayList();
                     comments.add(new RatingComment("System", 0, 0, "There aren't any comments yet.", new Timestamp(System.currentTimeMillis())));
                 }
 
-                // Chuyển đổi bình luận thành chuỗi
                 ObservableList<String> commentStrings = FXCollections.observableArrayList();
                 for (RatingComment comment : comments) {
                     commentStrings.add(comment.toString());
                 }
 
-                // Cập nhật giao diện trên JavaFX Application Thread
                 Platform.runLater(() -> {
                     ratingNum.setText("(" + numRating + ")");
                     updateRating(docRating);
@@ -143,29 +136,24 @@ public class DocumentDetailController {
         };
 
         TaskManager.runTask(loadCommentsTask,
-                () -> System.out.println("Load comments successfully."), // Callback thành công
-                () -> showAlert("Failed to load comments.")              // Callback thất bại
+                () -> System.out.println("Load comments successfully."),
+                () -> showAlert("Failed to load comments.")
         );
     }
 
     private void setupRatingEvents() {
-        // Danh sách các star
         List<FontAwesomeIconView> stars = Arrays.asList(userRatingStar1, userRatingStar2, userRatingStar3, userRatingStar4, userRatingStar5);
 
-        // Xử lý hover và click cho từng star
         for (int i = 0; i < stars.size(); i++) {
             final int starIndex = i;
             FontAwesomeIconView star = stars.get(i);
 
-            // Sự kiện di chuột vào
             star.setOnMouseEntered(event -> {
-                // Highlight tất cả các star từ 0 đến starIndex
                 for (int j = 0; j <= starIndex; j++) {
                     stars.get(j).getStyleClass().add("star-icon-hover");
                     stars.get(j).getStyleClass().remove("star-icon");
                     stars.get(j).getStyleClass().remove("star-icon-selected");
                 }
-                // Unhighlight các star còn lại
                 for (int j = starIndex + 1; j < stars.size(); j++) {
                     stars.get(j).getStyleClass().add("star-icon");
                     stars.get(j).getStyleClass().remove("star-icon-hover");
@@ -173,16 +161,13 @@ public class DocumentDetailController {
                 }
             });
 
-            // Sự kiện di chuột ra
             star.setOnMouseExited(event -> {
-                // Nếu chưa chọn userRating, trả tất cả các star về trạng thái ban đầu
                 if (userRating == null) {
                     for (FontAwesomeIconView s : stars) {
                         s.getStyleClass().clear();
                         s.getStyleClass().add("star-icon");
                     }
                 } else {
-                    // Nếu đã chọn rating, giữ highlight cho các star được chọn
                     for (int j = 0; j < stars.size(); j++) {
                         if (j < userRating) {
                             stars.get(j).getStyleClass().clear();
@@ -195,12 +180,10 @@ public class DocumentDetailController {
                 }
             });
 
-            // Sự kiện click
             star.setOnMouseClicked(event -> {
                 int rating = starIndex + 1;
                 userRating = rating;
 
-                // Highlight các star được chọn
                 for (int j = 0; j < stars.size(); j++) {
                     if (j < rating) {
                         stars.get(j).getStyleClass().clear();
@@ -215,10 +198,8 @@ public class DocumentDetailController {
     }
 
     private void updateRating(int rating) {
-        // Danh sách các sao
         List<FontAwesomeIconView> stars = Arrays.asList(star1, star2, star3, star4, star5);
 
-        // Làm nổi bật các sao dựa trên giá trị rating
         for (int i = 0; i < stars.size(); i++) {
             if (i < rating) {
                 stars.get(i).getStyleClass().clear();

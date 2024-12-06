@@ -74,7 +74,6 @@ public class BorrowRepository {
         List<BorrowHistory> historyList = new ArrayList<>();
         String query;
 
-        // Choose query based on document type
         if ("Books".equalsIgnoreCase(docType)) {
             query = "SELECT borrow_history.id, books.title AS docTitle, borrow_date, due_date, return_date, status "
                     + "FROM borrow_history "
@@ -124,7 +123,6 @@ public class BorrowRepository {
 
     public Document getRecentDocument(int userId, int borrowId) {
         Document document = null;
-        // Query to determine document type (book or thesis)
         String typeQuery = "SELECT doc_type FROM borrow_history WHERE user_id = ? AND id = ?";
         String docType = null;
 
@@ -136,7 +134,6 @@ public class BorrowRepository {
             e.printStackTrace();
         }
 
-        // Query to get document details based on the document type
         String query = docType.equalsIgnoreCase("book")
                 ? "SELECT b.* FROM borrow_history br JOIN books b ON br.doc_id = b.id WHERE br.user_id = ? AND br.id = ?"
                 : "SELECT t.* FROM borrow_history br JOIN theses t ON br.doc_id = t.id WHERE br.user_id = ? AND br.id = ?";
@@ -195,7 +192,6 @@ public class BorrowRepository {
         return document;
     }
 
-    // Method to get filtered history based on dynamic query and parameters
     public List<BorrowHistory> getFilteredHistory(String query, Object[] params) {
         List<BorrowHistory> historyList = new ArrayList<>();
         try (ResultSet rs = ConnectJDBC.executeQueryWithParams(query, params)) {
@@ -208,7 +204,6 @@ public class BorrowRepository {
         return historyList;
     }
 
-    // Method to get borrowing history by userId and title for search functionality
     public List<BorrowHistory> getAllHistoryByTitle(int userId, String docType, String title) {
         List<BorrowHistory> historyList = new ArrayList<>();
         String query;
@@ -249,9 +244,8 @@ public class BorrowRepository {
     public boolean hasUserAlreadyBorrowedDocument(int userId, int docId, String docType) {
         String query = "SELECT COUNT(*) FROM borrow_history WHERE user_id = ? AND doc_id = ? AND doc_type = ? AND status = 'borrowed'";
         try (ResultSet rs = ConnectJDBC.executeQueryWithParams(query, userId, docId, docType)) {
-            // Check if a result is returned
             if (rs.next()) {
-                return rs.getInt(1) > 0;  // If COUNT(*) > 0, it means the document is already borrowed by the user
+                return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();

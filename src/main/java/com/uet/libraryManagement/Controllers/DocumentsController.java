@@ -69,10 +69,8 @@ public abstract class DocumentsController implements Initializable {
             loadDocuments(newValue);
         });
 
-        // set default to show books
         docTypeBox.getSelectionModel().select("Books");
 
-        // handle double-clicked to show document details
         docsTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 if (docsTable.getSelectionModel().getSelectedItem() != null) {
@@ -85,7 +83,6 @@ public abstract class DocumentsController implements Initializable {
         HandleOutsideClickListener();
     }
 
-    // Toggle the visibility of the advanced filter panel
     @FXML
     private void toggleFilters() {
         filtersPanel.setVisible(!filtersPanel.isVisible());
@@ -94,7 +91,6 @@ public abstract class DocumentsController implements Initializable {
         }
     }
 
-    // Handle search action with the text from search bar
     @FXML
     private void handleSearchAction() {
         String searchTerm = searchBar.getText();
@@ -107,7 +103,6 @@ public abstract class DocumentsController implements Initializable {
         loadDocuments(docTypeBox.getValue());
     }
 
-    // Apply filters based on user inputs
     @FXML
     private void applyFilters() {
         String title = titleFilter.getText();
@@ -121,7 +116,6 @@ public abstract class DocumentsController implements Initializable {
         loadDocuments(title, author, category, startYear, endYear, isbn10, isbn13);
     }
 
-    // Clear all filters
     @FXML
     private void clearFilters() {
         titleFilter.clear();
@@ -134,17 +128,14 @@ public abstract class DocumentsController implements Initializable {
         loadDocuments(docTypeBox.getValue());
     }
 
-    // load documents base on type chosen from comboBox
     protected void loadDocuments(String docType) {
         Task<ObservableList<Document>> loadDocumentsTask = new Task<ObservableList<Document>>() {
             @Override
             protected ObservableList<Document> call() throws Exception {
                 ObservableList<Document> documents;
                 if ("Books".equals(docType)) {
-                    // Tải danh sách sách từ BookRepository
                     documents = BookRepository.getInstance().getAllBooks();
                 } else {
-                    // Tải danh sách luận văn từ ThesisRepository
                     documents = ThesisRepository.getInstance().getAllTheses();
                 }
                 return documents;
@@ -158,13 +149,12 @@ public abstract class DocumentsController implements Initializable {
 
         Runnable onFailure = () -> {
             Throwable ex = loadDocumentsTask.getException();
-            if (ex != null) ex.printStackTrace(); // Log lỗi để debug
+            if (ex != null) ex.printStackTrace();
         };
 
         TaskManager.runTask(loadDocumentsTask, onSuccess, onFailure);
     }
 
-    // add listener to handle clicked outside table
     private void HandleOutsideClickListener() {
         docsTable.sceneProperty().addListener((observable, oldScene, newScene) -> {
             if (newScene != null) {
@@ -172,12 +162,12 @@ public abstract class DocumentsController implements Initializable {
                     if (event.getTarget() instanceof Node) {
                         Node target = (Node) event.getTarget();
                         while (target != null) {
-                            if (target == docsTable) { // clicked on table view
+                            if (target == docsTable) {
                                 return;
                             }
                             target = target.getParent();
                         }
-                        docsTable.getSelectionModel().clearSelection(); // clicked outside tableview --> cancel selection
+                        docsTable.getSelectionModel().clearSelection();
                     }
                 });
             }
@@ -193,7 +183,6 @@ public abstract class DocumentsController implements Initializable {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uet/libraryManagement/FXML/DocumentDetail.fxml"));
                 Parent detailRoot = loader.load();
 
-                // Get the controller and set the selected book
                 DocumentDetailController controller = loader.getController();
                 controller.setDocumentDetails(selectedDocument);
                 controller.setDocument(selectedDocument);
@@ -202,7 +191,6 @@ public abstract class DocumentsController implements Initializable {
                 Scene detailScene = new Scene(detailRoot);
 
                 detailScene.getStylesheets().add(SceneManager.getInstance().get_css());
-                // Create a new stage for the book detail window
                 Stage detailStage = new Stage();
                 detailStage.setResizable(false);
                 String icon_url = Objects.requireNonNull(this.getClass().getResource("/com/uet/libraryManagement/ICONS/logo.png")).toExternalForm();
@@ -210,7 +198,7 @@ public abstract class DocumentsController implements Initializable {
                 detailStage.getIcons().add(icon);
                 detailStage.setTitle("Document Details");
                 detailStage.setScene(detailScene);
-                detailStage.initModality(Modality.APPLICATION_MODAL); // Make it a modal window
+                detailStage.initModality(Modality.APPLICATION_MODAL);
                 detailStage.showAndWait();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -239,7 +227,7 @@ public abstract class DocumentsController implements Initializable {
 
         Runnable onFailure = () -> {
             Throwable ex = loadDocumentsTask.getException();
-            if (ex != null) ex.printStackTrace(); // Log lỗi để debug
+            if (ex != null) ex.printStackTrace();
         };
 
         TaskManager.runTask(loadDocumentsTask, onSuccess, onFailure);

@@ -29,27 +29,26 @@ public class UserRepository {
         instance = userRepositoryMock;
     }
 
-    // check existed user
     public User validateUser(String username, String password) {
         String query = "SELECT * FROM users WHERE user_name = ? AND password = ?";
         try (ResultSet rs = ConnectJDBC.executeQueryWithParams(query, username, password)) {
             if (rs.next()) {
-                // Retrieve user data if login is successful
+
                 int id = rs.getInt("id");
                 String userName = rs.getString("user_name");
                 String pass = rs.getString("password");
-                String fullName = rs.getString("fullName"); // can be null
+                String fullName = rs.getString("fullName");
                 String email = rs.getString("email");
-                String birthday = rs.getString("birthday"); // Can be null
-                String image = rs.getString("image"); // Can be null
-                String phone = rs.getString("phone"); // Can be null
+                String birthday = rs.getString("birthday");
+                String image = rs.getString("image");
+                String phone = rs.getString("phone");
                 String role = rs.getString("role");
-                return new User(id, userName, pass, fullName, birthday, email, image, phone, role); // Adjust the constructor if necessary
+                return new User(id, userName, pass, fullName, birthday, email, image, phone, role);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null; // Login failed
+        return null;
     }
 
     public int getNumberOfUsers() {
@@ -87,13 +86,13 @@ public class UserRepository {
                 int id = rs.getInt("id");
                 String userName = rs.getString("user_name");
                 String pass = rs.getString("password");
-                String fullName = rs.getString("fullName"); // can be null
+                String fullName = rs.getString("fullName");
                 String email = rs.getString("email");
-                String birthday = rs.getString("birthday"); // Can be null
-                String image = rs.getString("image"); // Can be null
-                String phone = rs.getString("phone"); // Can be null
+                String birthday = rs.getString("birthday");
+                String image = rs.getString("image");
+                String phone = rs.getString("phone");
                 String role = rs.getString("role");
-                users.add(new User(id, userName, pass, fullName, birthday, email, image, phone, role)); // Adjust the constructor if necessary
+                users.add(new User(id, userName, pass, fullName, birthday, email, image, phone, role));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -130,7 +129,7 @@ public class UserRepository {
         String query = "SELECT COUNT(*) FROM users WHERE user_name = ?";
         try (ResultSet rs = ConnectJDBC.executeQueryWithParams(query, username)) {
             if (rs.next()) {
-                return rs.getInt(1) > 0; // Returns true if username exists
+                return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -138,10 +137,9 @@ public class UserRepository {
         return false;
     }
 
-    // create new document
     public boolean create(User user) {
         if (isUsernameTaken(user.getUsername())) {
-            return false; // Return false if the username is already taken
+            return false;
         }
 
         String maxIdQuery = "SELECT MAX(id) FROM users";
@@ -160,12 +158,11 @@ public class UserRepository {
         return true;
     }
 
-    // checking if user is borrowing documents
     public boolean isUserBorrowingDocuments(int userId) {
         String query = "SELECT COUNT(*) FROM borrow_history WHERE user_id = ? AND return_date IS NULL";
         try (ResultSet rs = ConnectJDBC.executeQueryWithParams(query, userId)) {
             if (rs.next()) {
-                return rs.getInt(1) > 0; // Nếu có ít nhất 1 tài liệu chưa trả
+                return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -173,7 +170,6 @@ public class UserRepository {
         return false;
     }
 
-    // edit document
     public void updateProfile(User user) throws IOException {
         String query = "UPDATE users SET fullName = ?, birthday = ?, email = ?, image = ?, phone = ? WHERE id = ?";
         ConnectJDBC.executeUpdate(query, user.getFullName(), user.getBirthday(), user.getEmail(), user.getAvatar(), user.getPhone(), user.getId());
@@ -184,7 +180,7 @@ public class UserRepository {
         ConnectJDBC.executeUpdate(query, user.getPassword(), user.getId());
     }
 
-    // delete document
+
     public void deleteUser(int userID) {
         String query = "DELETE FROM users WHERE id = ?";
         ConnectJDBC.executeUpdate(query, userID);

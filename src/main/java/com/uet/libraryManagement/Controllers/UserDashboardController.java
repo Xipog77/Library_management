@@ -64,7 +64,7 @@ public class UserDashboardController {
 
     private List<Document> recentDocs;
     private List<Document> recommendedDocs;
-    private int recentDocIndex = 0;      // index of current doc
+    private int recentDocIndex = 0;
     private int recommendedDocIndex = 0;
     private static final double CIRCLE_RADIUS = 30.0;
 
@@ -132,7 +132,7 @@ public class UserDashboardController {
                 },
                 () -> {
                     Throwable exception = loadDataTask.getException();
-                    exception.printStackTrace(); // Xử lý lỗi tải dữ liệu
+                    exception.printStackTrace();
                 });
     }
 
@@ -174,7 +174,7 @@ public class UserDashboardController {
 
     private void setupCircleProgress() {
         int totalHistory = Integer.parseInt(historyCount.getText());
-        if (totalHistory == 0) totalHistory = 1; // Avoid division by zero
+        if (totalHistory == 0) totalHistory = 1;
 
         setupCircle(borrowedCircle, (Integer.parseInt(borrowedCount.getText()) * 100.0) / totalHistory);
         setupCircle(dueSoonCircle, (Integer.parseInt(dueSoonCount.getText()) * 100.0) / totalHistory);
@@ -202,7 +202,7 @@ public class UserDashboardController {
                 },
                 () -> {
                     Throwable exception = loadRecentDocTask.getException();
-                    exception.printStackTrace(); // Xử lý lỗi tải dữ liệu
+                    exception.printStackTrace();
                 });
     }
 
@@ -221,7 +221,7 @@ public class UserDashboardController {
                 },
                 () -> {
                     Throwable exception = loadRecommendedTask.getException();
-                    exception.printStackTrace(); // Xử lý lỗi tải dữ liệu
+                    exception.printStackTrace();
                 });
     }
 
@@ -266,14 +266,12 @@ public class UserDashboardController {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uet/libraryManagement/FXML/DocumentDetail.fxml"));
                     Parent detailRoot = loader.load();
 
-                    // Lấy controller và thiết lập dữ liệu tài liệu
                     DocumentDetailController controller = loader.getController();
                     controller.setDocumentDetails(document);
                     controller.setDocument(document);
                     controller.setDocType(docType);
-                    controller.loadComments(document.getId(), docType); // Load comments trực tiếp
+                    controller.loadComments(document.getId(), docType);
 
-                    // Tạo Scene và Stage cho cửa sổ chi tiết tài liệu
                     Scene detailScene = new Scene(detailRoot);
                     detailScene.getStylesheets().add(SceneManager.getInstance().get_css());
 
@@ -284,7 +282,7 @@ public class UserDashboardController {
                     detailStage.getIcons().add(icon);
                     detailStage.setTitle("Document Details");
                     detailStage.setScene(detailScene);
-                    detailStage.initModality(Modality.APPLICATION_MODAL); // Đặt chế độ modal
+                    detailStage.initModality(Modality.APPLICATION_MODAL);
                     detailStage.showAndWait();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -304,12 +302,12 @@ public class UserDashboardController {
                     if (event.getTarget() instanceof Node) {
                         Node target = (Node) event.getTarget();
                         while (target != null) {
-                            if (target == recentBorrowsTable) { // clicked on table view
+                            if (target == recentBorrowsTable) {
                                 return;
                             }
                             target = target.getParent();
                         }
-                        recentBorrowsTable.getSelectionModel().clearSelection(); // clicked outside tableview --> cancel selection
+                        recentBorrowsTable.getSelectionModel().clearSelection();
                     }
                 });
             }
@@ -318,7 +316,7 @@ public class UserDashboardController {
 
     private void displayDocument(ImageView imageView, List<Document> documents, int index) {
         if (documents == null || documents.isEmpty() || index < 0 || index >= documents.size()) {
-            return; // Không làm gì nếu danh sách trống hoặc chỉ số không hợp lệ
+            return;
         }
         Document document = documents.get(index);
         if (document.getThumbnailUrl() != null && !document.getThumbnailUrl().isEmpty()
@@ -330,7 +328,7 @@ public class UserDashboardController {
             Image image = new Image(getClass().getResource("/com/uet/libraryManagement/ICONS/no_image.png").toExternalForm());
             imageView.setFitHeight(200);
             imageView.setFitWidth(150);
-            imageView.setImage(image); // set no thumbnail image
+            imageView.setImage(image);
         }
     }
 

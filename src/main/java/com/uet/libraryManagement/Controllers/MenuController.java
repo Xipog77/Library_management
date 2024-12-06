@@ -44,18 +44,15 @@ public class MenuController {
 
     @FXML
     private void exit() {
-        // create alert window.
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Exit confirmation");
         alert.setHeaderText("Do you really want to exit?");
         alert.setContentText("Choose OK to exit the application.");
 
-        // show confirmation window and wait for user response
         Optional<ButtonType> result = alert.showAndWait();
 
-        // check user response
         if (((Optional<?>) result).isPresent() && result.get() == ButtonType.OK) {
-            Platform.exit(); // exit
+            Platform.exit();
         }
     }
 
@@ -135,7 +132,6 @@ public class MenuController {
 
     @FXML
     private void LogOut() {
-        // Hiển thị cửa sổ xác nhận đăng xuất
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Log Out Confirmation");
         alert.setHeaderText("Do you really want to log out?");
@@ -143,10 +139,8 @@ public class MenuController {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            // set current user to null
             SessionManager.getInstance().logout();
 
-            // move to log in scene
             try {
                 SceneManager.getInstance().setLoginScene("FXML/Login.fxml");
             } catch (IOException e) {
@@ -165,41 +159,37 @@ public class MenuController {
     }
 
     private void showMenuBox() {
-        // Hiện overlayPane với độ mờ
         overlayPane.setVisible(true);
         overlayPane.toFront();
         menuBox.toFront();
 
-        // Thiết lập hiệu ứng mờ dần cho overlayPane
         FadeTransition fadeInOverlay = new FadeTransition(Duration.millis(300), overlayPane);
-        fadeInOverlay.setFromValue(0);     // bắt đầu từ trong suốt
-        fadeInOverlay.setToValue(0.5);     // kết thúc với độ mờ 50%
+        fadeInOverlay.setFromValue(0);
+        fadeInOverlay.setToValue(0.5);
         fadeInOverlay.play();
 
         TranslateTransition transition = new TranslateTransition(Duration.millis(200), menuBox);
-        transition.setFromX(-menuBox.getPrefWidth());  // start from left-most position
-        transition.setToX(0);                            // end at x = 0
+        transition.setFromX(-menuBox.getPrefWidth());
+        transition.setToX(0);
         transition.setOnFinished(event -> isMenuVisible = true);
         transition.play();
-        menuBox.setVisible(true);  // Hiển thị menu box
+        menuBox.setVisible(true);
 
-        // Thêm sự kiện bấm chuột để ẩn menuBox khi bấm vào overlayPane
         overlayPane.setOnMouseClicked(event -> hideMenuBox());
     }
 
     private void hideMenuBox() {
-        // Ẩn overlayPane với hiệu ứng mờ dần
         FadeTransition fadeOutOverlay = new FadeTransition(Duration.millis(200), overlayPane);
-        fadeOutOverlay.setFromValue(0.5);   // bắt đầu với độ mờ 50%
-        fadeOutOverlay.setToValue(0);       // kết thúc ở trong suốt
+        fadeOutOverlay.setFromValue(0.5);
+        fadeOutOverlay.setToValue(0);
         fadeOutOverlay.setOnFinished(event -> overlayPane.setVisible(false));
         fadeOutOverlay.play();
 
         TranslateTransition transition = new TranslateTransition(Duration.millis(200), menuBox);
-        transition.setFromX(0);                          // start from x = 0
-        transition.setToX(-menuBox.getPrefWidth());     // end at left-most position
+        transition.setFromX(0);
+        transition.setToX(-menuBox.getPrefWidth());
         transition.setOnFinished(event -> {
-            menuBox.setVisible(false); // hide menu box
+            menuBox.setVisible(false);
             overlayPane.toBack();
             menuBox.toBack();
             isMenuVisible = false;

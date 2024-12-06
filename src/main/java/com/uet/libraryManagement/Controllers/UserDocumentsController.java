@@ -26,28 +26,23 @@ public class UserDocumentsController extends DocumentsController {
         int docId = selectedDocument.getId();
         String docType = (selectedDocument instanceof Book) ? "book" : "thesis";
 
-        // Create a Task for borrowing logic
         Task<Boolean> borrowTask = new Task<>() {
             @Override
             protected Boolean call() throws Exception {
-                // Check if the user has already borrowed the document
                 if (BorrowRepository.getInstance().hasUserAlreadyBorrowedDocument(userId, docId, docType)) {
                     updateMessage("You have already borrowed this document.");
                     return false;
                 }
 
-                // Borrow document and update quantity
                 BorrowRepository.getInstance().borrowDocument(userId, docId, docType);
                 int newQuantity = selectedDocument.getQuantity() - 1;
                 BorrowRepository.getInstance().updateDocumentQuantity(docId, docType, newQuantity);
 
-                // Update the document quantity in the UI model
                 selectedDocument.setQuantity(newQuantity);
                 return true;
             }
         };
 
-        // Success handler
         Runnable onSuccess = () -> {
             if (borrowTask.getValue()) {
                 loadDocuments(docType.equals("book") ? "Books" : "Theses");
@@ -57,12 +52,10 @@ public class UserDocumentsController extends DocumentsController {
             }
         };
 
-        // Failure handler
         Runnable onFailure = () -> {
             showAlert("An error occurred while borrowing the document. Please try again.");
         };
 
-        // Run the Task using TaskManager
         TaskManager.runTask(borrowTask, onSuccess, onFailure);
     }
 }

@@ -52,9 +52,8 @@ public class EditProfileController {
 
         File selectedFile = fileChooser.showOpenDialog(avatarImage.getScene().getWindow());
         if (selectedFile != null) {
-            avatarPath = selectedFile.getAbsolutePath(); // Lưu tạm đường dẫn ảnh
+            avatarPath = selectedFile.getAbsolutePath();
 
-            // show temporary image
             Image img = new Image(new File(avatarPath).toURI().toString());
             avatarImage.setImage(img);
         }
@@ -75,29 +74,24 @@ public class EditProfileController {
         currentUser.setEmail(email);
         currentUser.setBirthday(birthday);
 
-        // Nếu có avatar mới, tải ảnh lên Imgur
         Task<Void> saveProfileTask = new Task<>() {
             @Override
             protected Void call() throws Exception {
                 if (avatarPath != null && !avatarPath.isEmpty()) {
-                    String imgurUrl = ImgurUpload.uploadImage(new File(avatarPath)); // Tải ảnh lên Imgur
-                    currentUser.setAvatar(imgurUrl); // Cập nhật URL avatar
+                    String imgurUrl = ImgurUpload.uploadImage(new File(avatarPath));
+                    currentUser.setAvatar(imgurUrl);
                 }
-                // Cập nhật thông tin user trong database
                 UserRepository.getInstance().updateProfile(currentUser);
                 return null;
             }
         };
 
-        // Xử lý thành công hoặc thất bại
         TaskManager.runTask(saveProfileTask, () -> {
-            // Thành công: hiển thị thông báo và đóng form
             Platform.runLater(() -> {
                 showAlert("Profile changed successfully.");
                 closeForm();
             });
         }, () -> {
-            // Thất bại: thông báo lỗi
             Platform.runLater(() -> showAlert("Failed to update profile. Please try again."));
         });
     }
@@ -108,7 +102,6 @@ public class EditProfileController {
         phoneField.setText(((currentUser.getPhone() == null) ? "N/A" : currentUser.getPhone()));
         emailField.setText(((currentUser.getEmail() == null) ? "N/A" : currentUser.getEmail()));
 
-        // Set birthdayField if birthday exists
         if (currentUser.getBirthday() != null && !currentUser.getBirthday().isEmpty()) {
             LocalDate birthday = LocalDate.parse(currentUser.getBirthday());
             birthdayField.setValue(birthday);

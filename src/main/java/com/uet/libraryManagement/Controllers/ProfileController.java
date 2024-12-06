@@ -47,9 +47,8 @@ public class ProfileController {
             stage.getIcons().add(icon);
             stage.setTitle("Edit Profile");
             stage.setScene(detailScene);
-            stage.showAndWait(); // Wait for the window to close before continuing
-
-            // Update profile info if the user made changes
+            stage.showAndWait();
+            
             loadUserInfo();
         } catch (IOException e) {
             e.printStackTrace();
@@ -72,7 +71,7 @@ public class ProfileController {
             stage.getIcons().add(icon);
             stage.setTitle("Change Password");
             stage.setScene(detailScene);
-            stage.showAndWait(); // Wait for the window to close before continuing
+            stage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
         }

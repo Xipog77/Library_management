@@ -19,19 +19,16 @@ public class LoginController {
 
     @FXML
     public void initialize() {
-        // Khởi tạo kết nối cơ sở dữ liệu trong background
         Task<Void> dbConnectTask = new Task<>() {
             @Override
             protected Void call() throws Exception {
-                ConnectJDBC.connect();  // Kết nối cơ sở dữ liệu
+                ConnectJDBC.connect();
                 return null;
             }
         };
 
-        // Chạy task kết nối cơ sở dữ liệu
         TaskManager.runTask(dbConnectTask, null, () -> messageLabel.setText("Failed to connect to the database"));
 
-        // Lắng nghe phím Enter trên trường username hoặc password
         username_textfield.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case ENTER -> handleLogin();
@@ -45,19 +42,16 @@ public class LoginController {
         });
     }
 
-    // handle login
     @FXML
     public void handleLogin() {
         String username = username_textfield.getText();
         String password = password_textfield.getText();
 
-        // Check if username and password fields are empty
         if (username.isEmpty() || password.isEmpty()) {
             messageLabel.setText("Please enter both username and password.");
             return;
         }
 
-        // Tạo Task xác thực người dùng
         Task<User> loginTask = new Task<>() {
             @Override
             protected User call() throws Exception {
@@ -68,7 +62,6 @@ public class LoginController {
         Runnable onSuccess = () -> {
             User user = loginTask.getValue();
             if (user != null && user.getRole().equals("user")) {
-                // Successful login, proceed to the main application scene
                 SessionManager.getInstance().setUser(user);
                 try {
                     SceneManager.getInstance().setScene("FXML/UserMenu.fxml");
@@ -88,14 +81,13 @@ public class LoginController {
                 }
             }
             else {
-                // Failed login
                 messageLabel.setText("Invalid username or password.");
             }
         };
 
         Runnable onFailure = () -> {
             Throwable ex = loginTask.getException();
-            if (ex != null) ex.printStackTrace(); // Log lỗi để debug
+            if (ex != null) ex.printStackTrace();
             messageLabel.setText("Failed to authenticate user.");
         };
 

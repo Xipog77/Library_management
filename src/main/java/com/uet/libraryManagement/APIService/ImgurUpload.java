@@ -17,11 +17,9 @@ public class ImgurUpload {
     public static String uploadImage(File imageFile) throws IOException {
         HttpURLConnection connection = null;
         try {
-            // Đọc file ảnh vào byte array
             Path path = imageFile.toPath();
             byte[] imageBytes = Files.readAllBytes(path);
 
-            // Mở kết nối với API Imgur
             URL url = new URL(UPLOAD_URL);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
@@ -29,7 +27,6 @@ public class ImgurUpload {
             connection.setRequestProperty("Authorization", "Client-ID " + CLIENT_ID);
             connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=----boundary");
 
-            // Dữ liệu form
             String boundary = "----boundary";
             String LINE_FEED = "\r\n";
 
@@ -40,13 +37,11 @@ public class ImgurUpload {
                     "Content-Disposition: form-data; name=\"image\"; filename=\"" + imageFile.getName() + "\"" + LINE_FEED +
                     "Content-Type: image/jpeg" + LINE_FEED + LINE_FEED;
 
-            // Gửi yêu cầu POST
             connection.getOutputStream().write(formData.getBytes());
             connection.getOutputStream().write(imageBytes);
             connection.getOutputStream().write(LINE_FEED.getBytes());
             connection.getOutputStream().write(boundaryEnd.getBytes());
 
-            // Đọc phản hồi từ Imgur
             InputStream responseStream = connection.getInputStream();
             StringBuilder response = new StringBuilder();
             int i;
@@ -54,11 +49,10 @@ public class ImgurUpload {
                 response.append((char) i);
             }
 
-            // Phân tích JSON để lấy URL ảnh
             String responseString = response.toString();
             if (responseString.contains("link")) {
                 String imgUrl = responseString.split("\"link\":\"")[1].split("\"")[0];
-                return imgUrl;  // Trả về URL ảnh đã tải lên Imgur
+                return imgUrl;
             } else {
                 throw new IOException("Failed to upload image to Imgur: " + responseString);
             }

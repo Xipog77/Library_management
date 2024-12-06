@@ -37,14 +37,12 @@ public class UserFormController {
         emailField.setText(user.getEmail());
         phoneField.setText((user.getPhone() == null) ? "N/A" : user.getPhone());
 
-        // Parse and set birthday if available
         if (user.getBirthday() != null && !user.getBirthday().isEmpty()) {
             birthdayField.setValue(LocalDate.parse(user.getBirthday()));
         } else {
             birthdayField.setPromptText("N/A");
         }
 
-        // Load avatar image if available
         if (currentUser.getAvatar() != null && !currentUser.getAvatar().isEmpty()) {
             Image image = new Image(currentUser.getAvatar(), true);
             userAva.setImage(image);
@@ -60,9 +58,8 @@ public class UserFormController {
 
         File selectedFile = fileChooser.showOpenDialog(userAva.getScene().getWindow());
         if (selectedFile != null) {
-            avatarPath = selectedFile.getAbsolutePath(); // Lưu tạm đường dẫn ảnh
+            avatarPath = selectedFile.getAbsolutePath();
 
-            // show temporary image
             Image img = new Image(new File(avatarPath).toURI().toString());
             userAva.setImage(img);
         }
@@ -87,29 +84,26 @@ public class UserFormController {
         Task<Void> saveUserTask = new Task<>() {
             @Override
             protected Void call() throws Exception {
-                // Nếu thumbnail đã được chọn, tải lên Imgur và lấy URL trả về
                 if (avatarPath != null && !avatarPath.isEmpty()) {
                     try {
                         String imgurUrl = ImgurUpload.uploadImage(new File(avatarPath));
-                        currentUser.setAvatar(imgurUrl); // Set avatar URL sau khi tải lên thành công
+                        currentUser.setAvatar(imgurUrl);
                     } catch (IOException e) {
                         throw new RuntimeException("Error uploading thumbnail image to Imgur.", e);
                     }
                 }
-                // Cập nhật thông tin hồ sơ người dùng
                 UserRepository.getInstance().updateProfile(currentUser);
                 return null;
             }
         };
 
-        // Sử dụng TaskManager để chạy task
         TaskManager.runTask(
                 saveUserTask,
-                () -> { // On Success
+                () -> {
                     showAlert("Profile changed successfully.");
-                    closeForm(); // Đóng form sau khi lưu thành công
+                    closeForm();
                 },
-                () -> { // On Failure
+                () -> {
                     showAlert("An error occurred while saving the profile: " + saveUserTask.getException().getMessage());
                 }
         );

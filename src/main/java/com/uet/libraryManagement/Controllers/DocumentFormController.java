@@ -43,7 +43,6 @@ public class DocumentFormController {
         this.docType = docType;
     }
 
-    // Set document details if editing an existing document
     public void setDocument(Document document) {
         this.document = document;
         titleField.setText(document.getTitle());
@@ -64,11 +63,10 @@ public class DocumentFormController {
             Image image = new Image(getClass().getResource("/com/uet/libraryManagement/ICONS/no_image.png").toExternalForm());
             thumbnailImage.setFitHeight(150);
             thumbnailImage.setFitWidth(150);
-            thumbnailImage.setImage(image); // set no thumbnail image
+            thumbnailImage.setImage(image);
         }
     }
 
-    // Clear input fields (for adding a new document)
     private void clearFields() {
         titleField.clear();
         authorField.clear();
@@ -91,9 +89,8 @@ public class DocumentFormController {
 
         File selectedFile = fileChooser.showOpenDialog(thumbnailImage.getScene().getWindow());
         if (selectedFile != null) {
-            thumbnailFilePath = selectedFile.getAbsolutePath(); // save temporary image path
+            thumbnailFilePath = selectedFile.getAbsolutePath();
 
-            // show temporary image
             Image img = new Image(new File(thumbnailFilePath).toURI().toString());
             thumbnailImage.setImage(img);
         }
@@ -125,7 +122,6 @@ public class DocumentFormController {
             return;
         }
 
-        // Validate and parse quantity
         int quantity;
         try {
             quantity = Integer.parseInt(quantityInput);
@@ -141,16 +137,15 @@ public class DocumentFormController {
         Task<Void> saveTask = new Task<>() {
             @Override
             protected Void call() throws Exception {
-                // This block will run in a separate thread
                 String imgurUrl = null;
 
                 if (thumbnailFilePath != null && !thumbnailFilePath.isEmpty()) {
                     try {
-                        imgurUrl = ImgurUpload.uploadImage(new File(thumbnailFilePath)); // Tải ảnh lên Imgur và nhận URL
+                        imgurUrl = ImgurUpload.uploadImage(new File(thumbnailFilePath));
                     } catch (IOException e) {
                         e.printStackTrace();
                         showAlert("Error uploading thumbnail image to Imgur.");
-                        return null; // Dừng lại nếu không thể tải ảnh lên Imgur
+                        return null;
                     }
                 }
 
@@ -165,7 +160,6 @@ public class DocumentFormController {
                         System.out.println("Thesis added");
                     }
                 } else if ("edit".equals(mode) && document != null) {
-                    // Update document details and save changes
                     document.setTitle(title);
                     document.setAuthor(author);
                     document.setPublisher(publisher);
@@ -176,11 +170,10 @@ public class DocumentFormController {
                     document.setIsbn13(isbn13);
                     document.setQuantity(quantity);
 
-                    // Upload image to imgur if necessary
                     if (thumbnailFilePath != null && !thumbnailFilePath.isEmpty() && !thumbnailFilePath.equals(document.getThumbnailUrl())) {
                         try {
-                            imgurUrl = ImgurUpload.uploadImage(new File(thumbnailFilePath)); // Upload image to Imgur
-                            document.setThumbnailUrl(imgurUrl);  // Set the new Imgur URL
+                            imgurUrl = ImgurUpload.uploadImage(new File(thumbnailFilePath));
+                            document.setThumbnailUrl(imgurUrl);
                         } catch (IOException e) {
                             e.printStackTrace();
                             showAlert("Error uploading thumbnail image to Imgur.");
@@ -206,7 +199,7 @@ public class DocumentFormController {
 
         Runnable onFailure = () -> {
             Throwable ex = saveTask.getException();
-            if (ex != null) ex.printStackTrace(); // Log lỗi để debug
+            if (ex != null) ex.printStackTrace();
             showAlert("Failed to save the document.");
         };
 

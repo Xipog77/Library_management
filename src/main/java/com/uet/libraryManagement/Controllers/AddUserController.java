@@ -30,7 +30,6 @@ public class AddUserController {
         String email = emailField.getText();
         String role = roleBox.getValue();
 
-        // Basic validation
         if (username.isEmpty() || password.isEmpty() || email.isEmpty()) {
             showAlert("Please fill all fields.");
             return;
@@ -53,28 +52,25 @@ public class AddUserController {
 
         User user = new User(username, password, email, role);
 
-        // Create Task to add user
         Task<Boolean> addUserTask = new Task<>() {
             @Override
             protected Boolean call() {
-                return UserRepository.getInstance().create(user); // Thực hiện thêm người dùng
+                return UserRepository.getInstance().create(user);
             }
         };
 
-        // Use TaskManager to handle task
         TaskManager.runTask(
                 addUserTask,
-                () -> { // On Success
+                () -> {
                     if (addUserTask.getValue()) {
                         showAlert("User added successfully.");
-                        // Đóng cửa sổ sau khi thêm thành công
                         Stage stage = (Stage) usernameField.getScene().getWindow();
                         stage.close();
                     } else {
                         showAlert("Failed to add user. Please try again.");
                     }
                 },
-                () -> showAlert("An error occurred while adding the user. Please try again.") // On Failure
+                () -> showAlert("An error occurred while adding the user. Please try again.")
         );
     }
 

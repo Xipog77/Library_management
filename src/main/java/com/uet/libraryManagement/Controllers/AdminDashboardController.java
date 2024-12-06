@@ -51,7 +51,6 @@ public class AdminDashboardController {
     }
 
     private void setupCircleProgress() {
-        // Circles will be updated after data is loaded
         resetCircle(allBooksCircle, "all-books-circle");
         resetCircle(remainingBooksCircle, "remaining-books-circle");
         resetCircle(issuedBooksCircle, "issued-books-circle");
@@ -68,7 +67,6 @@ public class AdminDashboardController {
     }
 
     private void setupStatisticsChart() {
-        // Load data asynchronously
         loadDashboardDataAsync();
     }
 
@@ -85,35 +83,30 @@ public class AdminDashboardController {
             }
         };
 
-        // Success handler
         Runnable onSuccess = () -> {
             DashboardData data = dashboardTask.getValue();
             updateUI(data);
             updateStatisticsChart(data);
         };
 
-        // Failure handler
         Runnable onFailure = () -> {
             showAlert("Failed to load dashboard data. Please try again.");
         };
 
-        // Run task with TaskManager
         TaskManager.runTask(dashboardTask, onSuccess, onFailure);
     }
 
     private void updateUI(DashboardData data) {
-        // Update labels
         allDocsCount.setText(String.valueOf(data.allDocs()));
         remainingDocsCount.setText(String.valueOf(data.remainingDocs()));
         issuedDocsCount.setText(String.valueOf(data.issuedDocs()));
         allUsersCount.setText(String.valueOf(data.allUsers()));
         holdingDocsCount.setText(String.valueOf(data.holdingUsers()));
 
-        // Update circles
-        setupCircle(allBooksCircle, 100, "all-books-circle"); // Always 100% for total
+        setupCircle(allBooksCircle, 100, "all-books-circle");
         setupCircle(remainingBooksCircle, (double) (data.remainingDocs() * 100) / data.allDocs(), "remaining-books-circle");
         setupCircle(issuedBooksCircle, (double) (data.issuedDocs() * 100) / data.allDocs(), "issued-books-circle");
-        setupCircle(allStudentsCircle, 100, "all-students-circle"); // Always 100% for total
+        setupCircle(allStudentsCircle, 100, "all-students-circle");
         setupCircle(holdingBooksCircle, (double) (data.holdingUsers() * 100) / data.allUsers(), "holding-books-circle");
     }
 
@@ -126,7 +119,6 @@ public class AdminDashboardController {
         Axis xAxis = statisticsChart.getXAxis();
         xAxis.setLabel("Categories");
 
-        // If you want to explicitly set labels
         if (xAxis instanceof CategoryAxis) {
             CategoryAxis categoryAxis = (CategoryAxis) xAxis;
             categoryAxis.setCategories(FXCollections.observableArrayList(
@@ -167,7 +159,6 @@ public class AdminDashboardController {
         alert.showAndWait();
     }
 
-    // Data container for dashboard
         private record DashboardData(int allDocs, int remainingDocs, int issuedDocs, int allUsers, int holdingUsers) {
     }
 }

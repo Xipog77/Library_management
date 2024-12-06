@@ -49,7 +49,7 @@ public class HistoryController implements Initializable {
     @FXML
     private ComboBox<String> docTypeBox;
 
-    private Integer selectedUserId = null;  // `null` means session user will be used
+    private Integer selectedUserId = null;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -88,7 +88,6 @@ public class HistoryController implements Initializable {
         HandleOutsideClickListener();
     }
 
-    // Setter method to set the selected user's ID and flag
     public void setSelectedUserId(int userId) {
         this.selectedUserId = userId;
     }
@@ -104,7 +103,6 @@ public class HistoryController implements Initializable {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uet/libraryManagement/FXML/DocumentDetail.fxml"));
                 Parent detailRoot = loader.load();
 
-                // Get the controller and set the selected book
                 DocumentDetailController controller = loader.getController();
                 controller.setDocumentDetails(document);
                 controller.setDocument(document);
@@ -114,7 +112,6 @@ public class HistoryController implements Initializable {
                 Scene detailScene = new Scene(detailRoot);
                 detailScene.getStylesheets().add(SceneManager.getInstance().get_css());
 
-                // Create a new stage for the book detail window
                 Stage detailStage = new Stage();
                 detailStage.setResizable(false);
                 String icon_url = Objects.requireNonNull(this.getClass().getResource("/com/uet/libraryManagement/ICONS/logo.png")).toExternalForm();
@@ -122,7 +119,7 @@ public class HistoryController implements Initializable {
                 detailStage.getIcons().add(icon);
                 detailStage.setTitle("Document Details");
                 detailStage.setScene(detailScene);
-                detailStage.initModality(Modality.APPLICATION_MODAL); // Make it a modal window
+                detailStage.initModality(Modality.APPLICATION_MODAL);
                 detailStage.showAndWait();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -130,7 +127,6 @@ public class HistoryController implements Initializable {
         }
     }
 
-    // Load borrowing history from the database
     public void loadHistory(int currentUserId, String docType) {
         int userIdToUse = (selectedUserId != null) ? selectedUserId : currentUserId;
 
@@ -157,7 +153,6 @@ public class HistoryController implements Initializable {
             return;
         }
 
-        // Check if the document has already been returned
         String status = borrowHistory.getStatus();
         if ("returned".equalsIgnoreCase(status)) {
             showAlert("This document has already been returned!");
@@ -174,11 +169,9 @@ public class HistoryController implements Initializable {
                         int docId = rs.getInt("doc_id");
                         String docType = rs.getString("doc_type");
 
-                        // Update the return date and status in the borrow_history table
                         String updateReturnQuery = "UPDATE borrow_history SET return_date = CURRENT_DATE, status = 'returned' WHERE id = ?";
                         ConnectJDBC.executeUpdate(updateReturnQuery, borrowId);
 
-                        // Increase the document quantity in the respective table
                         BorrowRepository.getInstance().increaseDocumentQuantity(docId, docType);
                     }
                 }
@@ -196,7 +189,6 @@ public class HistoryController implements Initializable {
         TaskManager.runTask(task, onSuccess, onFailure);
     }
 
-    // Handle search functionality
     public void handleSearchAction() {
         int userIdToUse = (selectedUserId != null) ? selectedUserId : SessionManager.getInstance().getUser().getId();
         String searchTerm = searchBar.getText();
@@ -206,12 +198,10 @@ public class HistoryController implements Initializable {
             @Override
             protected ObservableList<BorrowHistory> call() throws Exception {
                 if (searchTerm != null && !searchTerm.isEmpty()) {
-                    // Load history with search term
                     return FXCollections.observableArrayList(
                             BorrowRepository.getInstance().getAllHistoryByTitle(userIdToUse, docType, searchTerm)
                     );
                 } else {
-                    // Reload full history if search term is empty
                     return FXCollections.observableArrayList(
                             BorrowRepository.getInstance().getAllHistoryByUserId(userIdToUse, docType)
                     );
@@ -227,7 +217,6 @@ public class HistoryController implements Initializable {
             showAlert("An error occurred while searching. Please try again.");
         };
 
-        // Sử dụng TaskManager để chạy Task
         TaskManager.runTask(searchTask, onSuccess, onFailure);
     }
 
@@ -330,12 +319,12 @@ public class HistoryController implements Initializable {
                     if (event.getTarget() instanceof Node) {
                         Node target = (Node) event.getTarget();
                         while (target != null) {
-                            if (target == historyTable) { // clicked on table view
+                            if (target == historyTable) {
                                 return;
                             }
                             target = target.getParent();
                         }
-                        historyTable.getSelectionModel().clearSelection(); // clicked outside tableview --> cancel selection
+                        historyTable.getSelectionModel().clearSelection();
                     }
                 });
             }

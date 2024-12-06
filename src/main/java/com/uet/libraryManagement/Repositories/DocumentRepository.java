@@ -23,10 +23,7 @@ public abstract class DocumentRepository {
 
     public abstract String getDbTable();
 
-    // override in child class
-    protected void loadDatabase() {
-
-    }
+    protected void loadDatabase() {}
 
     public int getNumberOfDocuments() {
         String query = "SELECT SUM(quantity) FROM " + getDbTable();
@@ -41,7 +38,6 @@ public abstract class DocumentRepository {
         return count;
     }
 
-    // get recommended documents by user id
     public ObservableList<Document> getRecommendedDocuments(int userId) {
         ObservableList<Document> documents = FXCollections.observableArrayList();
 
@@ -140,7 +136,6 @@ public abstract class DocumentRepository {
         return documents;
     }
 
-    // get recent added documents
     public ObservableList<Document> getRecentAddedDocuments() {
         ObservableList<Document> documents = FXCollections.observableArrayList();
         String query = "SELECT *, 'book' AS docType FROM books "
@@ -173,7 +168,6 @@ public abstract class DocumentRepository {
         return documents;
     }
 
-    // get all books from database
     public ObservableList<Document> getAllBooks() {
         ObservableList<Document> books = FXCollections.observableArrayList();
         String query = "SELECT * FROM " + getDbTable();
@@ -186,7 +180,6 @@ public abstract class DocumentRepository {
         return books;
     }
 
-    // get all books from database
     public ObservableList<Document> getAllTheses() {
         ObservableList<Document> theses = FXCollections.observableArrayList();
         String query = "SELECT * FROM " + getDbTable();
@@ -199,20 +192,16 @@ public abstract class DocumentRepository {
         return theses;
     }
 
-    // find document by filter
     public ObservableList<Document> getFilteredDocuments(String title, String author, String category, String startYear, String endYear, String isbn10, String isbn13) {
         ObservableList<Document> documents = FXCollections.observableArrayList();
 
-        // Start the base query
-        String query = "SELECT * FROM " + getDbTable() + " WHERE 1=1"; // 1=1 is a placeholder for adding conditions
+        String query = "SELECT * FROM " + getDbTable() + " WHERE 1=1";
 
-        // Create a list to store parameters for the prepared statement
         List<Object> parameters = new ArrayList<>();
 
-        // Add filters if they are provided
         if (title != null && !title.isEmpty()) {
             query += " AND title LIKE ?";
-            parameters.add("%" + title + "%"); // Add wildcards for partial matching
+            parameters.add("%" + title + "%");
         }
         if (author != null && !author.isEmpty()) {
             query += " AND author LIKE ?";
@@ -239,7 +228,6 @@ public abstract class DocumentRepository {
             parameters.add(isbn13);
         }
 
-        // Execute the query with the parameters
         try (ResultSet rs = ConnectJDBC.executeQueryWithParams(query, parameters.toArray())) {
             getDocuments(rs, documents);
         } catch (SQLException e) {
@@ -252,7 +240,6 @@ public abstract class DocumentRepository {
     public ObservableList<Document> searchDocument(String search) {
         ObservableList<Document> documents = FXCollections.observableArrayList();
         search = "%" + search + "%";
-        // Start the base query
         String query = "SELECT * FROM " + getDbTable()
                 + " WHERE title LIKE ?"
                 + " OR author LIKE ?"
@@ -261,7 +248,6 @@ public abstract class DocumentRepository {
                 + " OR isbn10 LIKE ?"
                 + " OR isbn13 LIKE ?";
 
-        // Execute the query with the parameters
         try (ResultSet rs = ConnectJDBC.executeQueryWithParams(query, search, search, search, search, search, search)) {
             getDocuments(rs, documents);
         } catch (SQLException e) {
@@ -271,14 +257,12 @@ public abstract class DocumentRepository {
         return documents;
     }
 
-    // create new document
     public void create(Document document, int quantity) {
         Object[] params;
         String checkQuery;
         String insertQuery = "INSERT INTO " + getDbTable() + " (title, author, publisher, publishDate, description, "
                 + (getDbTable().equals("books") ? "genre" : "field") + ", thumbnail, isbn10, isbn13, quantity, createdDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        // check and reset AUTO_INCREMENT if needed
         String maxIdQuery = "SELECT MAX(id) FROM " + getDbTable();
         try (ResultSet maxIdRs = ConnectJDBC.executeQuery(maxIdQuery)) {
             if (maxIdRs.next()) {
@@ -290,9 +274,7 @@ public abstract class DocumentRepository {
             e.printStackTrace();
         }
 
-        // Special handling for "N/A" ISBN
         if ("N/A".equals(document.getIsbn10()) && "N/A".equals(document.getIsbn13())) {
-            // If both ISBNs are N/A, use a different uniqueness check
             checkQuery = "SELECT COUNT(*) FROM " + getDbTable() +
                     " WHERE title = ? AND author = ? AND publishDate = ?";
             params = new Object[]{
@@ -301,7 +283,6 @@ public abstract class DocumentRepository {
                     document.getYear()
             };
         } else {
-            // Original ISBN-based check
             checkQuery = "SELECT COUNT(*) FROM " + getDbTable() +
                     " WHERE (isbn10 = ? OR isbn13 = ?) AND isbn10 != 'N/A' AND isbn13 != 'N/A'";
             params = new Object[]{
@@ -311,14 +292,12 @@ public abstract class DocumentRepository {
         }
 
         try (ResultSet rs = ConnectJDBC.executeQueryWithParams(checkQuery, params)) {
-            // check if document already exists
             if (rs.next() && rs.getInt(1) > 0) {
                 showAlert("Document already exists in the database !");
                 System.out.println("Document already exists in the database.");
                 return;
             }
 
-            // add new document
             ConnectJDBC.executeUpdate(insertQuery, document.getTitle(), document.getAuthor(), document.getPublisher(),
                     document.getYear(), document.getDescription(), document.getCategory(),
                     document.getThumbnailUrl(), document.getIsbn10(), document.getIsbn13(),
@@ -329,7 +308,6 @@ public abstract class DocumentRepository {
         }
     }
 
-    // edit document
     public void update(Document document) {
         String query = "UPDATE " + getDbTable() + " SET title = ?, author = ?, publisher = ?, publishDate = ?, description = ?, "
                 + (getDbTable().equals("books") ? "genre" : "field") + " = ?, thumbnail = ?, isbn10 = ?, isbn13 = ?, quantity = ? WHERE id = ?";
@@ -338,18 +316,16 @@ public abstract class DocumentRepository {
                 document.getThumbnailUrl(), document.getIsbn10(), document.getIsbn13(), document.getQuantity(), document.getId());
     }
 
-    // delete document
     public void delete(Document document) {
         String query = "DELETE FROM " + getDbTable() + " WHERE id = ?";
         ConnectJDBC.executeUpdate(query, document.getId());
     }
 
-    // check if document is borrowed
     public boolean isBorrowed(int bookId, String docType) {
         String query = "SELECT COUNT(*) FROM borrow_history WHERE doc_id = ? AND doc_type = ? AND return_date IS NULL";
         try (ResultSet rs = ConnectJDBC.executeQueryWithParams(query, bookId, docType.equals("Books") ? "book" : "thesis")) {
             if (rs.next()) {
-                return rs.getInt(1) > 0; // Nếu có ít nhất 1 bản sao đang được mượn
+                return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();

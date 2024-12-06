@@ -3,10 +3,8 @@ package com.uet.libraryManagement;
 import javafx.beans.property.SimpleStringProperty;
 
 public class Thesis extends Document {
-    // attribute
     private final SimpleStringProperty field;
 
-    // constructors
     public Thesis() {
         super();
         field = new SimpleStringProperty();
@@ -32,7 +30,6 @@ public class Thesis extends Document {
         this.field = new SimpleStringProperty(field);
     }
 
-    // setter, getter
     public String getField() {
         return field.get();
     }

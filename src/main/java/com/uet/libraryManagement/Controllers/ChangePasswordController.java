@@ -25,19 +25,16 @@ public class ChangePasswordController {
         String newPassword = newPassField.getText();
         String confirmPassword = confirmPassField.getText();
 
-        // Validate current password
         if (!currentUser.getPassword().equals(currentPassword)) {
             messageLabel.setText("Incorrect Password");
             return;
         }
 
-        // check if new password is the same to the old one
         if (currentUser.getPassword().equals(newPassword)) {
             messageLabel.setText("New password is the same to the old password");
             return;
         }
 
-        // Check if new password and confirmation match
         if (!newPassword.equals(confirmPassword)) {
             messageLabel.setText("Passwords do not match");
             return;
@@ -46,7 +43,6 @@ public class ChangePasswordController {
         Task<Void> updatePasswordTask = new Task<>() {
             @Override
             protected Void call() throws Exception {
-                // Update password in the user and database
                 currentUser.setPassword(newPassword);
                 UserRepository.getInstance().updatePassword(currentUser);
                 return null;
@@ -60,7 +56,7 @@ public class ChangePasswordController {
 
         Runnable onFailure = () -> {
             Throwable ex = updatePasswordTask.getException();
-            if (ex != null) ex.printStackTrace(); // Log the error for debugging
+            if (ex != null) ex.printStackTrace();
             showAlert("Failed to change the password.");
         };
 
